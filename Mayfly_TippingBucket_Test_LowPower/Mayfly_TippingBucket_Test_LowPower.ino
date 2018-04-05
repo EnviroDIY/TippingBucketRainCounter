@@ -5,7 +5,8 @@
 
 volatile long NumTips = 0; //Tip counter used by ISR
 long ReadTips = 0; //Used as output for sample of tip counter to store "old" value, while counter can increment, used to make code reentrant 
-int Pin = 2; //Default pin value
+int Pin = 3; //Default pin value
+int Pin_Low = 4;
 int Debounce = 10;
 int ADR = 8; //The desired address of the slave device
 const unsigned long WAIT_TIME = 500;
@@ -15,6 +16,8 @@ void setup() {
   Wire.begin(ADR);                // join i2c bus as slave with address #8
   Wire.onRequest(SendTips); //call SendTips which address is recieved
   pinMode(Pin, INPUT_PULLUP); //Setup pin for tipping bucket using internal pullup 
+  pinMode(Pin_Low, OUTPUT);
+  digitalWrite(Pin_Low, LOW); //Drive pin adjacent to interrupt pin low, acts as "ground" for tipping bucket
   attachInterrupt(digitalPinToInterrupt(Pin), Tip, CHANGE); //Setup an interrupt for the tipping bucket pin, with Tip as the ISR, which will activate on every edge
 }
 

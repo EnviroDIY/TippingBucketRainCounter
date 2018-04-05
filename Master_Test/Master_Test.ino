@@ -23,3 +23,7 @@ void loop() {
 
   delay(2000);
 }
+
+//MAKE 2 BYTES! FIX!!
+
+//Add wiring guide 
