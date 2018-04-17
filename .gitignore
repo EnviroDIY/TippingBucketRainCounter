@@ -1,4 +1,30 @@
+
+# =========================
+# Operating System Files
+# =========================
+
+# OSX
+# =========================
+
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Thumbnails
+._*
+
+# Windows image file caches
+Thumbs.db
+ehthumbs.db
+
+# Folder config file
+Desktop.ini
+
+
+# Atom / PlatformIO
 .pioenvs
 .piolibdeps
 .clang_complete
 .gcc-flags.json
+lib/readme.txt
+platformio.ini
