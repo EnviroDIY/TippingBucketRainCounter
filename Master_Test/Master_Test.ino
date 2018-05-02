@@ -33,7 +33,7 @@ void setup() {
 }
 
 void loop() {
-  unsigned int Tips = 0; //Used to measure the number of tips
+  unsigned int tips = 0; //Used to measure the number of tips
   uint8_t Byte1 = 0; //Bytes to read then concatonate
   uint8_t Byte2 = 0;
 
@@ -41,10 +41,18 @@ void loop() {
   Byte1 = Wire.read();  //Read number of tips back
   Byte2 = Wire.read();
 
-  Tips = ((Byte2 << 8) | Byte1); //Concatenate bytes
+  tips = ((Byte2 << 8) | Byte1); //Concatenate bytes
 
   Serial.print("Number of Tips since last read = ");
-  Serial.println(Tips);  //Prints out tips to monitor
+
+  if (tips == 65535)
+  {
+      Serial.println("Sensor not connected");  // tips == 65535 if I2C isn't connectected
+  }
+  else
+  {
+      Serial.println(tips);  //Prints out tips to monitor
+  }
 
   delay(UpdateRate); //Waits for next period
 }
