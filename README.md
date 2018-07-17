@@ -1,4 +1,4 @@
-# RainTipCounter
+# TippingBucketRainCounter I2C Slave Device
 Arduino code & instructions to convert an [Adafruit Pro Trinket 3V board](https://www.adafruit.com/product/2010) into a tip counter for a tipping bucket rain gauge. Th Pro Trinket monitors tips and acts as an I2C slave to a main data logger board, such as the EnviroDIY Mayfly.
 
 Tips on how to program Adafruit Trinket Pro:
