@@ -7,11 +7,11 @@ Tips on how to program Adafruit Trinket Pro:
   * Note that you will not see the Pro Trinket show up as a COM port, but it can still accept programs over USB when in Bootloader mode (when the red LED is pulsing).
   * If the red LED is not pulsing, press the button on the Pro Trinket, pause for it to start pulsing, then upload the program.
 
-  Load this file the Pro Trinket, which serves as an I2C Slave for this application:
-  * `Slave_TippingBucket_Test_LowPower.ino`
+Load this file the Pro Trinket, which serves as an I2C Slave for this application:
+* `Slave_TippingBucket_Test_LowPower.ino`
 
-  Load this file to test on your data logging board, such as the EnviroDIY Mayfly, which serves as an I2C Master:
-  * `Master_Test.ino`
+Load this file to test on your data logging board, such as the EnviroDIY Mayfly, which serves as an I2C Master:
+* `Master_Test.ino`
 
 
 ## Wiring Guide
