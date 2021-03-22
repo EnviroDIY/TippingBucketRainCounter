@@ -21,12 +21,12 @@ Note that the Pro Trinket needs to always have power available, so if connecting
 
 ![Trinket Pro Slave Wiring Diagram](doc/TrinketProPinout.png)
 
-The Davis tipping bucket comes with a relatively short telephone cable (RJ11) with four wires. The Pro Trinket only needs to connect to two of these cables, and it doesn't matter which one is connected to TipA or TipB, they simply need to be opposite each other.
-**Tipping Bucket 		        -> Pro Trinket**
-Black/Black: Gnd 		      -> (not connected)
-Red/Red (TipA): 		      -> D3 (or D4, just opposite of TipB)
-Green/Green (TipB)	      -> D4 (or D3, just opposite of TipA)
-Yellow/White (alt TipB)	  -> D4 (or D3, just opposite of TipA)
+The Davis tipping bucket comes with a relatively short telephone cable (RJ11) with four wires. The Pro Trinket only needs to connect to two of these cables, and it doesn't matter which one is connected to TipA or TipB, they simply need to be opposite each other.  
+**Tipping Bucket 		        -> Pro Trinket**  
+Black/Black: Gnd 		      -> (not connected)  
+Red/Red (TipA): 		      -> D3 (or D4, just opposite of TipB)  
+Green/Green (TipB)	      -> D4 (or D3, just opposite of TipA)  
+Yellow/White (alt TipB)	  -> D4 (or D3, just opposite of TipA)  
 
 ## Reducing Power
 The power consumption of the Pro Trinket can be greatly reduced by cutting two connections on it's printed circuit board.
