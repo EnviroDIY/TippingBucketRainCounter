@@ -47,6 +47,7 @@ THIS CODE IS PROVIDED "AS IS" - NO WARRANTY IS GIVEN.
 // ==========================================================================
 //   Settings
 // ==========================================================================
+const char*  libVersion = "v0.2.0";
 
 volatile uint32_t NumTips = 0;  // Tip counter used by Interrupt Service Routine (ISR)
 uint32_t ReadTips = 0; // Used as output for sample of tip counter to store
@@ -116,6 +117,9 @@ void SendTips() {
 
     // Convert uint32_t ReadTips into a byte array
     // https://thewanderingengineer.com/2015/05/06/sending-16-bit-and-32-bit-numbers-with-arduino-i2c/#
+    // I2C default is Big-endian (most significant byte is written first)
+    // Unfortunately, for v0.1 of this repo, Bobby implemented Little-endian,
+    // but he only passed the first, least-signficant byte. See https://github.com/EnviroDIY/TippingBucketRainCounter/issues/5#issuecomment-813134796
     SerialBuffer[0] = (ReadTips >> 24) & 0xFF;
     SerialBuffer[1] = (ReadTips >> 16) & 0xFF;
     SerialBuffer[2] = (ReadTips >> 8) & 0xFF;

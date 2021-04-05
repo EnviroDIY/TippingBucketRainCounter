@@ -32,6 +32,11 @@ THIS CODE IS PROVIDED "AS IS" - NO WARRANTY IS GIVEN.
 // ==========================================================================
 //   Settings
 // ==========================================================================
+const char*  libVersion = "v0.2.0";
+
+// Debugging Statement (optional)
+#define RAINCOUNTERI2C_DEBUG
+
 int32_t serialBaud = 115200;  // Baud rate for serial monitor debugging
 
 uint32_t UpdateRate = 4000; // Milliseconds between measurement updates
@@ -64,6 +69,7 @@ uint8_t SerialBuffer[SerialBufferSize];  // Create a byte array
 void setup() {
     // Start the wire library (sensor power not required)
     Wire.begin();        // join i2c bus (address optional for master)
+
     // Eliminate any potential extra waits in the wire library
     // These waits would be caused by a readBytes or parseX being called
     // on wire after the Wire buffer has emptied.  The default stream
@@ -75,7 +81,11 @@ void setup() {
       //  As done in https://github.com/EnviroDIY/ModularSensors/blob/97bf70902010272d2e826f8a99d64f870368208e/src/sensors/RainCounterI2C.cpp#L84-L91
 
     Serial.begin(serialBaud);  // start serial for output
-    Serial.print("\nTippingBucketRainGauge Master_Test.ino sketch.\n\n"); //Generic begin statment for monitor
+
+    // Print begin statment to monitor
+    Serial.print("\nTippingBucketRainGauge ");
+    Serial.println(libVersion);
+    Serial.println("Master_Test.ino\n");
 }
 
 // ==========================================================================
@@ -95,33 +105,50 @@ void loop() {
     // from https://forum.arduino.cc/index.php?topic=584872.0
     if (Wire.available()) {
         Serial.println("\nReading tips...");
-        uint8_t chars_in = 0; // Start iterator for reading Bytes
+
+        uint8_t byte_in = 0; // Start iterator for reading Bytes
         while (Wire.available()) { // slave may send less than requested
             // Byte1 = Wire.read();  //Read number of tips back
             // Byte2 = Wire.read();
-            SerialBuffer[chars_in] = Wire.read();
+            SerialBuffer[byte_in] = Wire.read();
 
             // Byte output for Debugging
-            Serial.print("  SerialBuffer[");
-            Serial.print(chars_in);
-            Serial.print("] = ");
-            Serial.println(SerialBuffer[chars_in]);
+            #if defined RAINCOUNTERI2C_DEBUG
+                Serial.print("  SerialBuffer[");
+                Serial.print(byte_in);
+                Serial.print("] = ");
+                Serial.println(SerialBuffer[byte_in]);
+            #endif
 
-            chars_in++;  // increment by 1
+            byte_in++;  // increment by 1
 
             // alternate approach uses Serial.parseInt, https://arduinogetstarted.com/reference/serial-parseint
             // myInt = Serial.parseInt(SKIP_ALL, '\n');
         }
-        SerialBuffer[chars_in + 1] = '\0';  // assigns to null character.
 
         // Concatenate bytes into uint32_t by bit-shifting
         // https://thewanderingengineer.com/2015/05/06/sending-16-bit-and-32-bit-numbers-with-arduino-i2c/#
-        uint8_t SerialBufferLength = sizeof(SerialBuffer);
-        Serial.println(SerialBufferLength);
-        tips = SerialBuffer[0];
-        tips = (tips << 8) | SerialBuffer[1];
-        tips = (tips << 8) | SerialBuffer[2];
-        tips = (tips << 8) | SerialBuffer[3];
+        if ( (SerialBuffer[0] > 0)
+        ) {
+            // for Slave with libVersion = v0.1.0, which only sends 1-byte
+            // NOTE: this can not be falsely selected because it would require
+            // > 16,777,216 counts from a v0.2.0 slave, which is not possible in 24 hours
+            Serial.println("  Counted with slave libVersion = v0.1.0");
+            tips = SerialBuffer[0];
+        } else if ( (SerialBuffer[1] == 0) &&
+                    (SerialBuffer[2] == 255) ) {
+            // for Slave with libVersion = v0.1.0, in which no counts are made
+            // NOTE: this will be falsely selected if exactly 65535 counts
+            // were made by a v0.2.0 slave
+            Serial.println("  No counts with slave libVersion = v0.1.0");
+            tips = SerialBuffer[0];
+        } else {
+            // for Slave with libVersion >= v0.2.0
+            tips = SerialBuffer[0];
+            tips = (tips << 8) | SerialBuffer[1];
+            tips = (tips << 8) | SerialBuffer[2];
+            tips = (tips << 8) | SerialBuffer[3];
+        }
 
         Serial.print("  Tips since last read = ");
         Serial.println(tips);  //Prints out tips to monitor
