@@ -37,6 +37,8 @@ int32_t serialBaud = 115200;  // Baud rate for serial monitor debugging
 uint32_t UpdateRate = 4000; // Milliseconds between measurement updates
 uint8_t ADR = 0x08; // Address of slave device, 0x08 by default
 
+uint32_t tips = 0; // Used to measure the number of tips
+
 const uint8_t SerialBufferSize = 4; // Maximum number of bytes
   // = 4 for uint32_t or long
 uint8_t SerialBuffer[SerialBufferSize];  // Create a byte array
@@ -80,9 +82,8 @@ void setup() {
 //  Arduino Loop Function
 // ==========================================================================
 void loop() {
-    Serial.println("\nReading tips...");
 
-    uint32_t tips = 0; // Used to measure the number of tips
+    tips = 0; // reset tips
 
     // Bytes to read then concatenate
     // uint8_t Byte0, Byte1, Byte2, Byte3;
@@ -93,8 +94,9 @@ void loop() {
 
     // from https://forum.arduino.cc/index.php?topic=584872.0
     if (Wire.available()) {
+        Serial.println("\nReading tips...");
         uint8_t chars_in = 0; // Start iterator for reading Bytes
-        while (Wire.available()> 0 && chars_in < SerialBufferSize) { // slave may send less than requested
+        while (Wire.available()) { // slave may send less than requested
             // Byte1 = Wire.read();  //Read number of tips back
             // Byte2 = Wire.read();
             SerialBuffer[chars_in] = Wire.read();
@@ -110,22 +112,22 @@ void loop() {
             // alternate approach uses Serial.parseInt, https://arduinogetstarted.com/reference/serial-parseint
             // myInt = Serial.parseInt(SKIP_ALL, '\n');
         }
-
         SerialBuffer[chars_in + 1] = '\0';  // assigns to null character.
-    }
 
-    // Concatenate bytes into uint32_t by bit-shifting
-    // https://thewanderingengineer.com/2015/05/06/sending-16-bit-and-32-bit-numbers-with-arduino-i2c/#
-    tips = SerialBuffer[0];
-    tips = (tips << 8) | SerialBuffer[1];
-    tips = (tips << 8) | SerialBuffer[2];
-    tips = (tips << 8) | SerialBuffer[3];
+        // Concatenate bytes into uint32_t by bit-shifting
+        // https://thewanderingengineer.com/2015/05/06/sending-16-bit-and-32-bit-numbers-with-arduino-i2c/#
+        uint8_t SerialBufferLength = sizeof(SerialBuffer);
+        Serial.println(SerialBufferLength);
+        tips = SerialBuffer[0];
+        tips = (tips << 8) | SerialBuffer[1];
+        tips = (tips << 8) | SerialBuffer[2];
+        tips = (tips << 8) | SerialBuffer[3];
 
-    if (tips == 65535) {
-        Serial.println("Sensor not connected");  // tips == 65535 if I2C isn't connectected
-    } else {
         Serial.print("  Tips since last read = ");
         Serial.println(tips);  //Prints out tips to monitor
+
+    } else {
+        Serial.println("\nSensor not connected");  //
     }
 
 
