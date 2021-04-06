@@ -42,7 +42,8 @@ int32_t serialBaud = 115200;  // Baud rate for serial monitor debugging
 uint32_t UpdateRate = 4000; // Milliseconds between measurement updates
 uint8_t ADR = 0x08; // Address of slave device, 0x08 by default
 
-uint32_t tips = 0; // Used to measure the number of tips
+int32_t tips = 0; // Used to measure the number of tips
+  // Slave sends tips as uint32_t, but signed is important for enabiling -9999
 
 const uint8_t SerialBufferSize = 4; // Maximum number of bytes
   // = 4 for uint32_t or long
@@ -54,14 +55,6 @@ uint8_t SerialBuffer[SerialBufferSize];  // Create a byte array
 //  Working Functions
 // ==========================================================================
 
-// http://projectsfromtech.blogspot.com/2013/09/combine-2-bytes-into-int-on-arduino.html
-// uint16_t BitShiftCombine(uint8_t x_high, uint8_t x_low) {
-//     uint16_t combined;
-//     combined = x_high;         //send x_high to rightmost 8 bits
-//     combined = combined<<8;    //shift x_high over to leftmost 8 bits
-//     combined |= x_low;         //logical OR keeps x_high intact in combined and fills in                                                             //rightmost 8 bits
-//     return combined;
-// }
 
 // ==========================================================================
 //  Arduino Setup Function
@@ -108,10 +101,7 @@ void loop() {
 
         uint8_t byte_in = 0; // Start iterator for reading Bytes
         while (Wire.available()) { // slave may send less than requested
-            // Byte1 = Wire.read();  //Read number of tips back
-            // Byte2 = Wire.read();
             SerialBuffer[byte_in] = Wire.read();
-
             // Byte output for Debugging
             #if defined RAINCOUNTERI2C_DEBUG
                 Serial.print("  SerialBuffer[");
@@ -119,11 +109,7 @@ void loop() {
                 Serial.print("] = ");
                 Serial.println(SerialBuffer[byte_in]);
             #endif
-
             byte_in++;  // increment by 1
-
-            // alternate approach uses Serial.parseInt, https://arduinogetstarted.com/reference/serial-parseint
-            // myInt = Serial.parseInt(SKIP_ALL, '\n');
         }
 
         // Concatenate bytes into uint32_t by bit-shifting
