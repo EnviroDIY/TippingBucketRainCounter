@@ -17,9 +17,11 @@ Tips on how to program Adafruit Trinket Pro:
 Load this file the Pro Trinket, which serves as an I2C Slave for this application:
 * `Slave_TippingBucket_Test_LowPower.ino`
 
-Load this file to test on your data logging board, such as the EnviroDIY Mayfly, which serves as an I2C Master:
-* `Master_Test.ino`
-
+To test, load the `Master_Test.ino` file to test on your data logging board, such as the EnviroDIY Mayfly, which will serve as an I2C Master, then:
+- Turn on the serial montior for your data logger, and it should start printing output.
+- If the Pro Trinket "slave" is connected and programmed properly, then it will print “Tips since last read = ", followed by a count value, every 4 seconds.
+  - If it is all wired up to the tipping bucket (or anemometer), and you manually tip or spin it, then you will the count output as an integer.
+- If the Pro Trinket “slave” is not connected to I2C with the right address, then you will get a “Sensor not connected” output.
 
 ## Wiring Guide
 The wiring of the slave to the master is shown in the following graphic, where 3v3, GND, SDA, and SCL come from the master device (I2C), and TipA and TipB are the two lines connecting to the tipping bucket rain gauge (these lines are generally interchangeable).
